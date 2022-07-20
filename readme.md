@@ -32,13 +32,13 @@ In addition to the data files, the project workspace includes:
 This project will use I94 immigration raw data, world temperature raw data and demographic raw data to create dim fact tables for analytical purposes.
 
 - Data used for building:
-    > I94 immigration raw data `../../../data/18-83510-I94-Data-2016/i94_apr16_sub.sas7bdat`
-    > World temperature raw data `../../data2/GlobalLandTemperaturesByCity.csv`
-    > Demographic raw data `us-cities-demographics.csv`
+    - > I94 immigration raw data `../../../data/18-83510-I94-Data-2016/i94_apr16_sub.sas7bdat`
+    - > World temperature raw data `../../data2/GlobalLandTemperaturesByCity.csv`
+    - > Demographic raw data `us-cities-demographics.csv`
 - Coding:
-    > PySpark framework
-    > Pandas for data exploration and plot chart
-    > Amazon S3 for running on cloud
+    - > PySpark framework
+    - > Pandas for data exploration and plot chart
+    - > Amazon S3 for running on cloud
 
 
 
