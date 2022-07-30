@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession
 import utils
 import etl_functions
 import pyspark.sql.functions as F
-
+from quality_checks import *
 
 
 
@@ -107,6 +107,37 @@ def dim_temperatures(spark, temperature_file_path):
 
 
 
+# name_dfs_mapping = {
+#     'immigration_fact': fact_immigration,
+#     'visa_type_dim': dim_visatypes,
+#     'calendar_dim': dim_calendar,
+#     'usa_demographics_dim': dim_demographics,
+#     'country_dim': dim_countries
+# }
+
+
+
+# views_columns_mapping = {
+#     'immigration_fact' : ['cicid', 'i94yr', 'i94mon',
+#                          'i94cit', 'country_residence_code', 'i94port',
+#                          'arrdate', 'i94mode', 'state_code',
+#                          'depdate', 'i94bir', 'i94visa',
+#                          'count', 'dtadfile', 'visapost',
+#                          'entdepa', 'entdepd', 'matflag',
+#                          'biryear', 'dtaddto', 'gender',
+#                          'airline', 'admnum', 'fltno',
+#                          'visa_type_key'],
+#     'visa_type_dim':['visa_type', 'visa_type_key'],
+#     'calendar_dim': ['id', 'arrdate', 'arrival_day', 'arrival_month',
+#                      'arrival_weekday', 'arrival_week', 'arrival_year'],
+#     'usa_demographics_dim':['state_code', 'total_population', 'male_population', 
+#                             'female_population', 'median_age', 'number_of_veterans', 
+#                             'average_household_size', 'foreign_born',
+#                             'count', 'race', 'id', 'city', 'state'],
+#     'country_dim':['average_temperature', 'country_code', 'country_name']
+# }
+
+
 
 def main():
     spark = create_spark_session()
@@ -131,17 +162,29 @@ def main():
                                                              i94res_mapping_file_path, \
                                                              demographics_file_path)
     
-    # data quality checks
-    tables = {'fact_immigration': fact_immigration,
-             'dim_visatypes': dim_visatypes,
-             'dim_calendar': dim_calendar,
-             'dim_demographics': dim_demographics,
-             'dim_countries': dim_countries}
+#     # data quality checks
+#     tables = {'fact_immigration': fact_immigration,
+#              'dim_visatypes': dim_visatypes,
+#              'dim_calendar': dim_calendar,
+#              'dim_demographics': dim_demographics,
+#              'dim_countries': dim_countries}
     
-    for table_name, dim_fact_tables in tables.items():
-        etl_functions.quality_checks(dim_fact_tables, table_name)
-        dim_fact_tables.show(5, truncate=False)
+#     for table_name, dim_fact_tables in tables.items():
+#         etl_functions.quality_checks(dim_fact_tables, table_name)
+#         dim_fact_tables.show(5, truncate=False)
+
     
+    name_dfs_mapping, views_columns_mapping = mapping_objects(
+        fact_immigration, 
+        dim_visatypes, 
+        dim_calendar, 
+        dim_demographics, 
+        dim_countries
+    )
+    quality_checks_zero_record(name_dfs_mapping)
+    create_view_from_df(name_dfs_mapping)
+    quality_checks_column_null(spark, views_columns_mapping)
+    quality_checks_schema_completeness(name_dfs_mapping, views_columns_mapping)
 
 
 if __name__ == "__main__":

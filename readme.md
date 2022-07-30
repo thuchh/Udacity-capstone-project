@@ -15,6 +15,7 @@ In addition to the data files, the project workspace includes:
 * **etl.py** -> Defaul: Read files on local machine and transform to dimensional tables, fact table to store processed data in parquet files. You can change the input/output path to reads data from S3 buckets and save back to it.
 * **etl_functions.py** -> functions for creating fact and dimension tables.
 * **utility.py** -> functions for data visualizations in Jupyter Notebook file and cleaning raw data. 
+* **quality_checks.py** -> functions for data quality check of dim / fact tables.
 * **config.cfg** -> credentials to access AWS EMR.
 * **Jupyter Notebooks** -> used for exploring data, testing, cleaning and building the ETL pipeline.
 
@@ -25,6 +26,16 @@ In addition to the data files, the project workspace includes:
 * Step 3: Define the Data Model
 * Step 4: Run ETL to Model the Data
 * Step 5: Complete Project Write Up
+
+### Technologies and tools used in this project:
+- Python 3.9
+- Pandas
+- Seaborn
+- Matplotlib
+- Amazon S3
+- Apache Spark
+- Power BI (for schema modeling)
+
 
 ## Step 1: Scope the Project and Gather Data
 ### Project Scope
@@ -38,7 +49,7 @@ This project will use I94 immigration raw data, world temperature raw data and d
 - Coding:
     - > PySpark framework
     - > Pandas for data exploration and plot chart
-    - > Amazon S3 for running on cloud
+    - > Amazon S3 for running on Amazon Web Service 
 
 
 
@@ -49,7 +60,7 @@ This project will use I94 immigration raw data, world temperature raw data and d
 
 ## Step 3: Define the Data Model
 
-### 3.1 Dictionary of input data
+### 3.1 Data Dictionary of datasets
 
 <p class="title" align="center">I94 Immigration Data<p>
 <table class="tg" align="center">
@@ -144,6 +155,7 @@ Data pipeline processing steps:
 - 6. Load and clean `us-cities-demographics.csv` -> `dim_demographics`
 - 7. Create `fact_immigration`
 - 8. Return dim fact tables for `data quality checks`
+- 9. Run data quality check for schema completeness, column nulls, column name matching.
 
 
 ## Step 4: Run Pipelines to Model the Data 
@@ -156,3 +168,21 @@ To build data warehouse with data on Amazon S3:
 - Add your credentials to [config file](config.cfg)
 - Change the input_data, output_data path at the end of file [etl.py](etl.py)
 - Spark command line: `spark-submit --packages saurfang:spark-sas7bdat:2.0.0-s_2.10 etl.py`
+
+
+## Step 5: Complete Project Write Up
+* Clearly state the rationale for the choice of tools and technologies for the project.
+    > Apache Spark is used in this project due to the ability to handle large amount of data, read multiple file formats, and APIs of Spark is easy to use and apply on this project.
+    > Seaborn and matplotlib is used in this project to visualize the missing data and help user decide a solution to handle the problem.
+* Propose how often the data should be updated and why.
+    > The data pipeline will be update monthly due to large amount of data.
+* Write a description of how you would approach the problem differently under the following scenarios:
+ * IF The data was increased by 100x 
+     > Spark still easily handle these large amount of data, user just need to increase cluster nodes in the Amazon EMR for smooth ETL process.
+ * The data populates a dashboard that must be updated on a daily basis by 7am every day 
+     > We need to use Apache Airflow to schedule the pipeline to run 7am daily. 
+ * The database needed to be accessed by 100+ people.
+     > We will move dim fact tables (stored in parquet format) on local machine or on Amazone S3 to the Amazon Redshift data warehouse to create credentials for 100+ user access.
+ 
+* Sample query on the database
+    ![Sample query](sample_query.png)
